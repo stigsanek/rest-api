@@ -5,26 +5,57 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations as RestRoute;
+use App\Entity\User;
 
 class UsersController extends AbstractController
 {
     /**
      * @RestRoute\Get("/users", name="get_all_users")
+     *
+     * Метод получения списка пользователей
      */
     public function getAllUsers()
     {
+        $users = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->findAll();
+
+        $data = [];
+        foreach ($users as $item) {
+            $data[] = [
+                'id' => $item->getId(),
+                'first_name' => $item->getFirstName(),
+                'last_name' => $item->getLastName()
+            ];
+        }
+
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/UsersController.php',
+            'users' => $data
         ]);
     }
 
     /**
      * @RestRoute\Get("/users/{id}", name="get_item_users")
+     *
+     * Метод получения пользователя по id
      */
     public function getItemUsers($id)
     {
+        $user = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->find($id);
 
+        if (!$user) {
+            return $this->json([
+                'message' => 'No user found for id ' . $id
+            ]);
+        }
+
+        return $this->json([
+            'id' => $user->getId(),
+            'first_name' => $user->getFirstName(),
+            'last_name' => $user->getLastName()
+        ]);
     }
 
     /**
@@ -32,7 +63,6 @@ class UsersController extends AbstractController
      */
     public function addUsers()
     {
-
     }
 
     /**
@@ -40,7 +70,6 @@ class UsersController extends AbstractController
      */
     public function updateUsers($id)
     {
-
     }
 
     /**
@@ -48,6 +77,5 @@ class UsersController extends AbstractController
      */
     public function deleteUsers($id)
     {
-
     }
 }
