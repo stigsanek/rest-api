@@ -3,14 +3,13 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use FOS\RestBundle\Controller\Annotations as RestRoute;
+use FOS\RestBundle\Controller\Annotations as Route;
 use App\Entity\User;
 
 class UsersController extends AbstractController
 {
     /**
-     * @RestRoute\Get("/users", name="get_all_users")
+     * @Route\Get("/users", name="get_all_users")
      *
      * Метод получения списка пользователей
      */
@@ -35,7 +34,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @RestRoute\Get("/users/{id}", name="get_item_users")
+     * @Route\Get("/users/{id}", name="get_item_users")
      *
      * Метод получения пользователя по id
      */
@@ -59,21 +58,21 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @RestRoute\Post("/users", name="add_users")
+     * @Route\Post("/users", name="add_users")
      */
     public function addUsers()
     {
     }
 
     /**
-     * @RestRoute\Put("/users/{id}", name="update_users")
+     * @Route\Put("/users/{id}", name="update_users")
      */
     public function updateUsers($id)
     {
     }
 
     /**
-     * @RestRoute\Delete("/users/{id}", name="delete_users")
+     * @Route\Delete("/users/{id}", name="delete_users")
      */
     public function deleteUsers($id)
     {
