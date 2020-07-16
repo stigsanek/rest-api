@@ -19,32 +19,40 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
-    // /**
-    //  * @return Task[] Returns an array of Task objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @return Task[]
+     *
+     * Метод фильтрации списка задач
+     */
+    public function findByFilter($filterData)
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        if (empty($filterData)) {
+            return;
+        }
 
-    /*
-    public function findOneBySomeField($value): ?Task
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $genQuery = '';
+        $params = [];
+
+        foreach ($filterData as $key => $value) {
+            if ($key !== 'title' || $key !== 'deadline' || $key !== 'user_id') {
+                return;
+            }
+
+            $genQuery .= 'task.' . $key . ' = :' . $key . ' AND ';
+            $params[$key] = $value;
+        }
+
+        $where = substr($genQuery, 0, strlen($genQuery) - strlen(' AND '));
+
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'SELECT task FROM App\Entity\Task task WHERE ' . $where
+        );
+
+        foreach ($params as $item => $value) {
+            $query->setParameter($item, $value);
+        }
+
+        return $query->getResult();
     }
-    */
 }
