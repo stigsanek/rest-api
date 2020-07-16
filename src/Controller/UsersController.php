@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\Controller\Annotations as Route;
+use App\Service\Extractor;
 use App\Entity\User;
 
 class UsersController extends AbstractController
@@ -59,9 +60,25 @@ class UsersController extends AbstractController
 
     /**
      * @Route\Post("/users", name="add_users")
+     *
+     * Метод добавления нового пользователя
      */
     public function addUsers()
     {
+        $method = $_SERVER['REQUEST_METHOD'];
+        $data = Extractor::extractData($method);
+
+        $user = new User();
+        $user->setFirstName($data['first_name']);
+        $user->setLastName($data['last_name']);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'User added'
+        ]);
     }
 
     /**
