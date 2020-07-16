@@ -48,7 +48,8 @@ class UsersController extends AbstractController
 
         if (!$user) {
             return $this->json([
-                'message' => 'No user found for id ' . $id
+                'message' => 'No user found for id ' . $id,
+                'code' => 400
             ]);
         }
 
@@ -62,7 +63,7 @@ class UsersController extends AbstractController
     /**
      * @Route\Post("/users", name="add_users")
      *
-     * Метод добавления нового пользователя
+     * Метод создания нового пользователя
      */
     public function addUsers(ValidatorInterface $validator)
     {
@@ -78,6 +79,7 @@ class UsersController extends AbstractController
         if (count($errors) > 0) {
             return $this->json([
                 'message' => 'User no added',
+                'code' => 400,
                 'errors' => (string) $errors
             ]);
         }
@@ -87,12 +89,15 @@ class UsersController extends AbstractController
         $entityManager->flush();
 
         return $this->json([
-            'message' => 'User added'
+            'message' => 'User added',
+            'code' => 200
         ]);
     }
 
     /**
      * @Route\Put("/users/{id}", name="update_users")
+     *
+     * Метод обновления пользователя
      */
     public function updateUsers($id, ValidatorInterface $validator)
     {
@@ -104,7 +109,8 @@ class UsersController extends AbstractController
 
         if (!$user) {
             return $this->json([
-                'message' => 'No user found for id ' . $id
+                'message' => 'No user found for id ' . $id,
+                'code' => 400
             ]);
         }
 
@@ -116,6 +122,7 @@ class UsersController extends AbstractController
         if (count($errors) > 0) {
             return $this->json([
                 'message' => 'User no updated',
+                'code' => 400,
                 'errors' => (string) $errors
             ]);
         }
@@ -123,14 +130,36 @@ class UsersController extends AbstractController
         $entityManager->flush();
 
         return $this->json([
-            'message' => 'User updated'
+            'message' => 'User updated',
+            'code' => 200
         ]);
     }
 
     /**
      * @Route\Delete("/users/{id}", name="delete_users")
+     *
+     * Метод удаления пользователя
      */
     public function deleteUsers($id)
     {
+        $user = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->find($id);
+
+        if (!$user) {
+            return $this->json([
+                'message' => 'No user found for id ' . $id,
+                'code' => 400
+            ]);
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'User deleted',
+            'code' => 200
+        ]);
     }
 }

@@ -47,7 +47,8 @@ class TasksController extends AbstractController
 
         if (!$task) {
             return $this->json([
-                'message' => 'No task found for id ' . $id
+                'message' => 'No task found for id ' . $id,
+                'code' => 400
             ]);
         }
 
