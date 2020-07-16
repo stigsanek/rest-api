@@ -10,6 +10,8 @@ class DefaultController extends AbstractController
 {
     /**
      * @Route("/default", name="default")
+     *
+     * Action главной страницы
      */
     public function index()
     {
