@@ -15,6 +15,6 @@ class DefaultController extends AbstractController
      */
     public function index()
     {
-        return new Response('REST API for task runner');
+        return new Response('Welcome to the task tracker REST API');
     }
 }
