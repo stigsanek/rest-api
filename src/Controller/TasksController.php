@@ -138,4 +138,32 @@ class TasksController extends AbstractController
             'code' => 200
         ]);
     }
+
+    /**
+     * @Route\Delete("/tasks/{id}", name="delete_tasks")
+     *
+     * Метод удаления задачи
+     */
+    public function deleteTasks($id)
+    {
+        $task = $this->getDoctrine()
+            ->getRepository(Task::class)
+            ->find($id);
+
+        if (!$task) {
+            return $this->json([
+                'message' => 'No task found for id ' . $id,
+                'code' => 400
+            ]);
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($task);
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'Task deleted',
+            'code' => 200
+        ]);
+    }
 }
