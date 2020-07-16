@@ -34,7 +34,7 @@ class TaskRepository extends ServiceEntityRepository
         $params = [];
 
         foreach ($filterData as $key => $value) {
-            if ($key !== 'title' || $key !== 'deadline' || $key !== 'user_id') {
+            if ($key !== 'title' && $key !== 'deadline' && $key !== 'user_id') {
                 return;
             }
 
