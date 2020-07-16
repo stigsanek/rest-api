@@ -5,7 +5,7 @@ namespace App\Service;
 class Extractor
 {
     /**
-     * Статичный метод получения данных для всех видов запросов
+     * Метод получения данных для всех видов запросов
      * GET, POST, PUT, DELETE...
      */
     public static function extractData($method)
