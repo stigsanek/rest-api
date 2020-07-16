@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use FOS\RestBundle\Controller\Annotations as Route;
+use App\Service\Extractor;
 use App\Entity\Task;
 
 class TasksController extends AbstractController
@@ -57,6 +59,41 @@ class TasksController extends AbstractController
             'title' => $task->getTitle(),
             'deadline' => $task->getDeadline(),
             'user_id' => $task->getUserId()
+        ]);
+    }
+
+    /**
+     * @Route\Post("/tasks", name="add_tasks")
+     *
+     * Метод создания новой задачи
+     */
+    public function addTasks(ValidatorInterface $validator)
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
+        $data = Extractor::extractData($method);
+
+        $task = new Task();
+        $task->setTitle($data['title']);
+        $task->setDeadline(new \DateTime($data['deadline']));
+        $task->setUserId($data['user_id']);
+
+        $errors = $validator->validate($task);
+
+        if (count($errors) > 0) {
+            return $this->json([
+                'message' => 'Task no added',
+                'code' => 400,
+                'errors' => (string) $errors
+            ]);
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($task);
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'Task added',
+            'code' => 200
         ]);
     }
 }
