@@ -96,4 +96,46 @@ class TasksController extends AbstractController
             'code' => 200
         ]);
     }
+
+    /**
+     * @Route\Put("/tasks/{id}", name="update_tasks")
+     *
+     * Метод обновления задачи
+     */
+    public function updateTasks($id, ValidatorInterface $validator)
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
+        $data = Extractor::extractData($method);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $task = $entityManager->getRepository(Task::class)->find($id);
+
+        if (!$task) {
+            return $this->json([
+                'message' => 'No task found for id ' . $id,
+                'code' => 400
+            ]);
+        }
+
+        $task->setTitle($data['title']);
+        $task->setDeadline(new \DateTime($data['deadline']));
+        $task->setUserId($data['user_id']);
+
+        $errors = $validator->validate($task);
+
+        if (count($errors) > 0) {
+            return $this->json([
+                'message' => 'Task no updated',
+                'code' => 400,
+                'errors' => (string) $errors
+            ]);
+        }
+
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'Task updated',
+            'code' => 200
+        ]);
+    }
 }
