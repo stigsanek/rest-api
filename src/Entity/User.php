@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -26,6 +28,12 @@ class User
      * @ORM\Column(type="string", length=255)
      */
     private $last_name;
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('first_name', new NotBlank());
+        $metadata->addPropertyConstraint('last_name', new NotBlank());
+    }
 
     public function getId(): ?int
     {
