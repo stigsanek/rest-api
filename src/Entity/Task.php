@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\TaskRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=TaskRepository::class)
@@ -31,6 +33,13 @@ class Task
      * @ORM\Column(type="integer")
      */
     private $user_id;
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('title', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('deadline', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('user_id', new Assert\Positive());
+    }
 
     public function getId(): ?int
     {
