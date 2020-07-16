@@ -166,4 +166,41 @@ class TasksController extends AbstractController
             'code' => 200
         ]);
     }
+
+    /**
+     * @Route\Get("/filter", name="get_by_filter")
+     *
+     * Метод фильтрации списка задач
+     */
+    public function getByFilter()
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
+        $data = Extractor::extractData($method);
+
+        $tasks = $this->getDoctrine()
+            ->getRepository(Task::class)
+            ->findByFilter($data);
+
+        if (empty($tasks)) {
+            return $this->json([
+                'message' => 'No task found',
+                'code' => 400
+            ]);
+        }
+
+        $filters = [];
+        foreach ($tasks as $item) {
+            $filters[] = [
+                'id' => $item->getId(),
+                'title' => $item->getTitle(),
+                'deadline' => $item->getDeadline(),
+                'user_id' => $item->getUserId()
+            ];
+        }
+
+        return $this->json([
+            'count' => count($filters),
+            'tasks' => $filters
+        ]);
+    }
 }
