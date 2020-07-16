@@ -14,6 +14,8 @@ class UsersController extends AbstractController
      * @Route\Get("/users", name="get_all_users")
      *
      * Метод получения списка пользователей
+     *
+     * @return string
      */
     public function getAllUsers()
     {
@@ -39,6 +41,9 @@ class UsersController extends AbstractController
      * @Route\Get("/users/{id}", name="get_item_users")
      *
      * Метод получения пользователя по id
+     *
+     * @param integer $id - id пользователя
+     * @return string
      */
     public function getItemUsers($id)
     {
@@ -64,6 +69,8 @@ class UsersController extends AbstractController
      * @Route\Post("/users", name="add_users")
      *
      * Метод создания нового пользователя
+     *
+     * @return string
      */
     public function addUsers(ValidatorInterface $validator)
     {
@@ -98,6 +105,10 @@ class UsersController extends AbstractController
      * @Route\Put("/users/{id}", name="update_users")
      *
      * Метод обновления пользователя
+     *
+     * @param integer $id - id пользователя
+     * @param object $validator - валидатор
+     * @return string
      */
     public function updateUsers($id, ValidatorInterface $validator)
     {
@@ -139,6 +150,9 @@ class UsersController extends AbstractController
      * @Route\Delete("/users/{id}", name="delete_users")
      *
      * Метод удаления пользователя
+     *
+     * @param integer $id - id пользователя
+     * @return string
      */
     public function deleteUsers($id)
     {

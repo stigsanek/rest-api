@@ -34,6 +34,11 @@ class Task
      */
     private $user_id;
 
+    /**
+     * Метод загрузки свойств для проверки валидатором
+     *
+     * @param object $metadata - класс метаданных
+     */
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('title', new Assert\NotBlank());
@@ -41,16 +46,32 @@ class Task
         $metadata->addPropertyConstraint('user_id', new Assert\Positive());
     }
 
+    /**
+     * Геттер id
+     *
+     * @return integer
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * Геттер title
+     *
+     * @return string
+     */
     public function getTitle(): ?string
     {
         return $this->title;
     }
 
+    /**
+     * Сеттер title
+     *
+     * @param string $title - текст задачи
+     * @return object
+     */
     public function setTitle(string $title): self
     {
         $this->title = $title;
@@ -58,11 +79,22 @@ class Task
         return $this;
     }
 
+    /**
+     * Геттер deadline
+     *
+     * @return string
+     */
     public function getDeadline(): ?\DateTimeInterface
     {
         return $this->deadline;
     }
 
+    /**
+     * Сеттер deadline
+     *
+     * @param string $deadline - дата
+     * @return object
+     */
     public function setDeadline(\DateTimeInterface $deadline): self
     {
         $this->deadline = $deadline;
@@ -70,11 +102,22 @@ class Task
         return $this;
     }
 
+    /**
+     * Геттер user_id
+     *
+     * @return integer
+     */
     public function getUserId(): ?int
     {
         return $this->user_id;
     }
 
+    /**
+     * Сеттер user_id
+     *
+     * @param integer $user_id - id пользователя
+     * @return object
+     */
     public function setUserId(int $user_id): self
     {
         $this->user_id = $user_id;

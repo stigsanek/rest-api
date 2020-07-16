@@ -20,9 +20,10 @@ class TaskRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Task[]
-     *
      * Метод фильтрации списка задач
+     *
+     * @param array $filterData - массив параметров фильтра
+     * @return array
      */
     public function findByFilter($filterData)
     {

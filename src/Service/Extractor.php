@@ -5,8 +5,10 @@ namespace App\Service;
 class Extractor
 {
     /**
-     * Метод получения данных для всех видов запросов
-     * GET, POST, PUT, DELETE...
+     * Метод получения данных для всех видов запросов: GET, POST, PUT, DELETE
+     *
+     * @param string $method - метод
+     * @return array
      */
     public static function extractData($method)
     {

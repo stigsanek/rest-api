@@ -14,6 +14,8 @@ class TasksController extends AbstractController
      * @Route\Get("/tasks", name="get_all_tasks")
      *
      * Метод получения списка задач
+     *
+     * @return string
      */
     public function getAllTasks()
     {
@@ -40,6 +42,9 @@ class TasksController extends AbstractController
      * @Route\Get("/tasks/{id}", name="get_item_tasks")
      *
      * Метод получения задачи по id
+     *
+     * @param integer $id - id задачи
+     * @return string
      */
     public function getItemTasks($id)
     {
@@ -66,6 +71,8 @@ class TasksController extends AbstractController
      * @Route\Post("/tasks", name="add_tasks")
      *
      * Метод создания новой задачи
+     *
+     * @return string
      */
     public function addTasks(ValidatorInterface $validator)
     {
@@ -101,6 +108,10 @@ class TasksController extends AbstractController
      * @Route\Put("/tasks/{id}", name="update_tasks")
      *
      * Метод обновления задачи
+     *
+     * @param integer $id - id задачи
+     * @param object $validator - валидатор
+     * @return string
      */
     public function updateTasks($id, ValidatorInterface $validator)
     {
@@ -143,6 +154,9 @@ class TasksController extends AbstractController
      * @Route\Delete("/tasks/{id}", name="delete_tasks")
      *
      * Метод удаления задачи
+     *
+     * @param integer $id - id задачи
+     * @return string
      */
     public function deleteTasks($id)
     {
@@ -171,6 +185,8 @@ class TasksController extends AbstractController
      * @Route\Get("/filter", name="get_by_filter")
      *
      * Метод фильтрации списка задач
+     *
+     * @return string
      */
     public function getByFilter()
     {

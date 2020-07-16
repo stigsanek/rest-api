@@ -29,22 +29,43 @@ class User
      */
     private $last_name;
 
+    /**
+     * Метод загрузки свойств для проверки валидатором
+     *
+     * @param object $metadata - класс метаданных
+     */
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('first_name', new NotBlank());
         $metadata->addPropertyConstraint('last_name', new NotBlank());
     }
 
+    /**
+     * Геттер id
+     *
+     * @return integer
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * Геттер first_name
+     *
+     * @return string
+     */
     public function getFirstName(): ?string
     {
         return $this->first_name;
     }
 
+    /**
+     * Сеттер first_name
+     *
+     * @param string $first_name - имя
+     * @return object
+     */
     public function setFirstName(string $first_name): self
     {
         $this->first_name = $first_name;
@@ -52,11 +73,22 @@ class User
         return $this;
     }
 
+    /**
+     * Геттер last_name
+     *
+     * @return string
+     */
     public function getLastName(): ?string
     {
         return $this->last_name;
     }
 
+    /**
+     * Сеттер last_name
+     *
+     * @param string $last_name - фамилия
+     * @return object
+     */
     public function setLastName(string $last_name): self
     {
         $this->last_name = $last_name;
