@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use FOS\RestBundle\Controller\Annotations as Route;
 use App\Service\Extractor;
 use App\Entity\User;
@@ -63,7 +64,7 @@ class UsersController extends AbstractController
      *
      * Метод добавления нового пользователя
      */
-    public function addUsers()
+    public function addUsers(ValidatorInterface $validator)
     {
         $method = $_SERVER['REQUEST_METHOD'];
         $data = Extractor::extractData($method);
@@ -71,6 +72,15 @@ class UsersController extends AbstractController
         $user = new User();
         $user->setFirstName($data['first_name']);
         $user->setLastName($data['last_name']);
+
+        $errors = $validator->validate($user);
+
+        if (count($errors) > 0) {
+            return $this->json([
+                'message' => 'User no added',
+                'errors' => (string) $errors
+            ]);
+        }
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($user);
@@ -84,8 +94,37 @@ class UsersController extends AbstractController
     /**
      * @Route\Put("/users/{id}", name="update_users")
      */
-    public function updateUsers($id)
+    public function updateUsers($id, ValidatorInterface $validator)
     {
+        $method = $_SERVER['REQUEST_METHOD'];
+        $data = Extractor::extractData($method);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            return $this->json([
+                'message' => 'No user found for id ' . $id
+            ]);
+        }
+
+        $user->setFirstName($data['first_name']);
+        $user->setLastName($data['last_name']);
+
+        $errors = $validator->validate($user);
+
+        if (count($errors) > 0) {
+            return $this->json([
+                'message' => 'User no updated',
+                'errors' => (string) $errors
+            ]);
+        }
+
+        $entityManager->flush();
+
+        return $this->json([
+            'message' => 'User updated'
+        ]);
     }
 
     /**
