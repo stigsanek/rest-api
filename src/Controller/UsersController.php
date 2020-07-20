@@ -4,8 +4,9 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Route;
-use App\Service\Extractor;
 use App\Entity\User;
 
 class UsersController extends AbstractController
@@ -32,9 +33,7 @@ class UsersController extends AbstractController
             ];
         }
 
-        return $this->json([
-            'users' => $data
-        ]);
+        return new JsonResponse($data, 200);
     }
 
     /**
@@ -52,17 +51,21 @@ class UsersController extends AbstractController
             ->find($id);
 
         if (!$user) {
-            return $this->json([
-                'message' => 'No user found for id ' . $id,
-                'code' => 400
-            ]);
+            $data = [
+                'status' => 404,
+                'message' => 'No user found for id ' . $id
+            ];
+
+            return new JsonResponse($data, 404);
         }
 
-        return $this->json([
+        $data = [
             'id' => $user->getId(),
             'first_name' => $user->getFirstName(),
             'last_name' => $user->getLastName()
-        ]);
+        ];
+
+        return new JsonResponse($data, 200);
     }
 
     /**
@@ -70,35 +73,38 @@ class UsersController extends AbstractController
      *
      * Метод создания нового пользователя
      *
+     * @param object $validator - валидатор
+     * @param object $request - объект запроса
      * @return string
      */
-    public function addUsers(ValidatorInterface $validator)
+    public function addUsers(ValidatorInterface $validator, Request $request)
     {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $data = Extractor::extractData($method);
-
         $user = new User();
-        $user->setFirstName($data['first_name']);
-        $user->setLastName($data['last_name']);
+        $user->setFirstName($request->get('first_name'));
+        $user->setLastName($request->get('last_name'));
 
         $errors = $validator->validate($user);
 
         if (count($errors) > 0) {
-            return $this->json([
+            $data = [
+                'status' => 422,
                 'message' => 'User no added',
-                'code' => 400,
                 'errors' => (string) $errors
-            ]);
+            ];
+
+            return new JsonResponse($data, 422);
         }
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return $this->json([
-            'message' => 'User added',
-            'code' => 200
-        ]);
+        $data = [
+            'status' => 200,
+            'message' => 'User added'
+        ];
+
+        return new JsonResponse($data, 200);
     }
 
     /**
@@ -108,42 +114,46 @@ class UsersController extends AbstractController
      *
      * @param integer $id - id пользователя
      * @param object $validator - валидатор
+     * @param object $request - объект запроса
      * @return string
      */
-    public function updateUsers($id, ValidatorInterface $validator)
+    public function updateUsers($id, ValidatorInterface $validator, Request $request)
     {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $data = Extractor::extractData($method);
-
         $entityManager = $this->getDoctrine()->getManager();
         $user = $entityManager->getRepository(User::class)->find($id);
 
         if (!$user) {
-            return $this->json([
-                'message' => 'No user found for id ' . $id,
-                'code' => 400
-            ]);
+            $data = [
+                'status' => 404,
+                'message' => 'No user found for id ' . $id
+            ];
+
+            return new JsonResponse($data, 404);
         }
 
-        $user->setFirstName($data['first_name']);
-        $user->setLastName($data['last_name']);
+        $user->setFirstName($request->get('first_name'));
+        $user->setLastName($request->get('last_name'));
 
         $errors = $validator->validate($user);
 
         if (count($errors) > 0) {
-            return $this->json([
+            $data = [
+                'status' => 422,
                 'message' => 'User no updated',
-                'code' => 400,
                 'errors' => (string) $errors
-            ]);
+            ];
+
+            return new JsonResponse($data, 422);
         }
 
         $entityManager->flush();
 
-        return $this->json([
-            'message' => 'User updated',
-            'code' => 200
-        ]);
+        $data = [
+            'status' => 200,
+            'message' => 'User updated'
+        ];
+
+        return new JsonResponse($data, 200);
     }
 
     /**
@@ -161,19 +171,23 @@ class UsersController extends AbstractController
             ->find($id);
 
         if (!$user) {
-            return $this->json([
-                'message' => 'No user found for id ' . $id,
-                'code' => 400
-            ]);
+            $data = [
+                'status' => 404,
+                'message' => 'No user found for id ' . $id
+            ];
+
+            return new JsonResponse($data, 404);
         }
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($user);
         $entityManager->flush();
 
-        return $this->json([
-            'message' => 'User deleted',
-            'code' => 200
-        ]);
+        $data = [
+            'status' => 200,
+            'message' => 'User deleted'
+        ];
+
+        return new JsonResponse($data, 200);
     }
 }

@@ -4,8 +4,9 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Route;
-use App\Service\Extractor;
 use App\Entity\Task;
 
 class TasksController extends AbstractController
@@ -33,9 +34,7 @@ class TasksController extends AbstractController
             ];
         }
 
-        return $this->json([
-            'tasks' => $data
-        ]);
+        return new JsonResponse($data, 200);
     }
 
     /**
@@ -53,18 +52,22 @@ class TasksController extends AbstractController
             ->find($id);
 
         if (!$task) {
-            return $this->json([
-                'message' => 'No task found for id ' . $id,
-                'code' => 400
-            ]);
+            $data = [
+                'status' => 404,
+                'message' => 'No task found for id ' . $id
+            ];
+
+            return new JsonResponse($data, 404);
         }
 
-        return $this->json([
+        $data = [
             'id' => $task->getId(),
             'title' => $task->getTitle(),
             'deadline' => $task->getDeadline(),
             'user_id' => $task->getUserId()
-        ]);
+        ];
+
+        return new JsonResponse($data, 200);
     }
 
     /**
@@ -72,36 +75,39 @@ class TasksController extends AbstractController
      *
      * Метод создания новой задачи
      *
+     * @param object $validator - валидатор
+     * @param object $request - объект запроса
      * @return string
      */
-    public function addTasks(ValidatorInterface $validator)
+    public function addTasks(ValidatorInterface $validator, Request $request)
     {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $data = Extractor::extractData($method);
-
         $task = new Task();
-        $task->setTitle($data['title']);
-        $task->setDeadline(new \DateTime($data['deadline']));
-        $task->setUserId($data['user_id']);
+        $task->setTitle($request->get('title'));
+        $task->setDeadline(new \DateTime($request->get('deadline')));
+        $task->setUserId($request->get('user_id'));
 
         $errors = $validator->validate($task);
 
         if (count($errors) > 0) {
-            return $this->json([
+            $data = [
+                'status' => 422,
                 'message' => 'Task no added',
-                'code' => 400,
                 'errors' => (string) $errors
-            ]);
+            ];
+
+            return new JsonResponse($data, 422);
         }
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($task);
         $entityManager->flush();
 
-        return $this->json([
-            'message' => 'Task added',
-            'code' => 200
-        ]);
+        $data = [
+            'status' => 200,
+            'message' => 'Task added'
+        ];
+
+        return new JsonResponse($data, 200);
     }
 
     /**
@@ -111,43 +117,47 @@ class TasksController extends AbstractController
      *
      * @param integer $id - id задачи
      * @param object $validator - валидатор
+     * @param object $request - объект запроса
      * @return string
      */
-    public function updateTasks($id, ValidatorInterface $validator)
+    public function updateTasks($id, ValidatorInterface $validator, Request $request)
     {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $data = Extractor::extractData($method);
-
         $entityManager = $this->getDoctrine()->getManager();
         $task = $entityManager->getRepository(Task::class)->find($id);
 
         if (!$task) {
-            return $this->json([
-                'message' => 'No task found for id ' . $id,
-                'code' => 400
-            ]);
+            $data = [
+                'status' => 404,
+                'message' => 'No task found for id ' . $id
+            ];
+
+            return new JsonResponse($data, 404);
         }
 
-        $task->setTitle($data['title']);
-        $task->setDeadline(new \DateTime($data['deadline']));
-        $task->setUserId($data['user_id']);
+        $task->setTitle($request->get('title'));
+        $task->setDeadline(new \DateTime($request->get('deadline')));
+        $task->setUserId($request->get('user_id'));
 
         $errors = $validator->validate($task);
 
         if (count($errors) > 0) {
-            return $this->json([
+            $data = [
+                'status' => 422,
                 'message' => 'Task no updated',
-                'code' => 400,
                 'errors' => (string) $errors
-            ]);
+            ];
+
+            return new JsonResponse($data, 422);
         }
 
         $entityManager->flush();
 
-        return $this->json([
-            'message' => 'Task updated',
-            'code' => 200
-        ]);
+        $data = [
+            'status' => 200,
+            'message' => 'Task updated'
+        ];
+
+        return new JsonResponse($data, 200);
     }
 
     /**
@@ -165,20 +175,24 @@ class TasksController extends AbstractController
             ->find($id);
 
         if (!$task) {
-            return $this->json([
-                'message' => 'No task found for id ' . $id,
-                'code' => 400
-            ]);
+            $data = [
+                'status' => 404,
+                'message' => 'No task found for id ' . $id
+            ];
+
+            return new JsonResponse($data, 404);
         }
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->remove($task);
         $entityManager->flush();
 
-        return $this->json([
-            'message' => 'Task deleted',
-            'code' => 200
-        ]);
+        $data = [
+            'status' => 200,
+            'message' => 'Task deleted'
+        ];
+
+        return new JsonResponse($data, 200);
     }
 
     /**
@@ -186,37 +200,43 @@ class TasksController extends AbstractController
      *
      * Метод фильтрации списка задач
      *
+     * @param object $request - объект запроса
      * @return string
      */
-    public function getByFilter()
+    public function getByFilter(Request $request)
     {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $data = Extractor::extractData($method);
+        try {
+            $tasks = $this->getDoctrine()
+                ->getRepository(Task::class)
+                ->findByFilter($request);
 
-        $tasks = $this->getDoctrine()
-            ->getRepository(Task::class)
-            ->findByFilter($data);
+            if (empty($tasks)) {
+                $data = [
+                    'status' => 404,
+                    'message' => 'No task found'
+                ];
 
-        if (empty($tasks)) {
-            return $this->json([
-                'message' => 'No task found',
-                'code' => 400
-            ]);
-        }
+                return new JsonResponse($data, 404);
+            }
 
-        $filters = [];
-        foreach ($tasks as $item) {
-            $filters[] = [
-                'id' => $item->getId(),
-                'title' => $item->getTitle(),
-                'deadline' => $item->getDeadline(),
-                'user_id' => $item->getUserId()
+            $filters = [];
+            foreach ($tasks as $item) {
+                $filters[] = [
+                    'id' => $item->getId(),
+                    'title' => $item->getTitle(),
+                    'deadline' => $item->getDeadline(),
+                    'user_id' => $item->getUserId()
+                ];
+            }
+
+            return new JsonResponse($filters, 200);
+        } catch (\Exception $e) {
+            $data = [
+                'status' => 404,
+                'message' => 'No task found'
             ];
-        }
 
-        return $this->json([
-            'count' => count($filters),
-            'tasks' => $filters
-        ]);
+            return new JsonResponse($data, 404);
+        }
     }
 }

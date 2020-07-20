@@ -22,23 +22,25 @@ class TaskRepository extends ServiceEntityRepository
     /**
      * Метод фильтрации списка задач
      *
-     * @param array $filterData - массив параметров фильтра
+     * @param object $request - объект запроса
      * @return array
      */
-    public function findByFilter($filterData)
+    public function findByFilter($request)
     {
-        if (empty($filterData)) {
-            return;
+        $filterData = [];
+
+        if ($request->get('deadline')) {
+            $filterData['deadline'] = $request->get('deadline');
+        }
+
+        if ($request->get('user_id')) {
+            $filterData['user_id'] = $request->get('user_id');
         }
 
         $genQuery = '';
         $params = [];
 
         foreach ($filterData as $key => $value) {
-            if ($key !== 'title' && $key !== 'deadline' && $key !== 'user_id') {
-                return;
-            }
-
             $genQuery .= 'task.' . $key . ' = :' . $key . ' AND ';
             $params[$key] = $value;
         }
