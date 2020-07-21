@@ -13,7 +13,7 @@ class DefaultController extends AbstractController
      *
      * Action главной страницы
      *
-     * @return string
+     * @return object
      */
     public function index()
     {

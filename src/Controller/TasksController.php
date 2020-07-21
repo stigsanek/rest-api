@@ -16,7 +16,7 @@ class TasksController extends AbstractController
      *
      * Метод получения списка задач
      *
-     * @return string
+     * @return object
      */
     public function getAllTasks()
     {
@@ -43,7 +43,7 @@ class TasksController extends AbstractController
      * Метод получения задачи по id
      *
      * @param integer $id - id задачи
-     * @return string
+     * @return object
      */
     public function getItemTasks($id)
     {
@@ -77,7 +77,7 @@ class TasksController extends AbstractController
      *
      * @param object $validator - валидатор
      * @param object $request - объект запроса
-     * @return string
+     * @return object
      */
     public function addTasks(ValidatorInterface $validator, Request $request)
     {
@@ -118,7 +118,7 @@ class TasksController extends AbstractController
      * @param integer $id - id задачи
      * @param object $validator - валидатор
      * @param object $request - объект запроса
-     * @return string
+     * @return object
      */
     public function updateTasks($id, ValidatorInterface $validator, Request $request)
     {
@@ -166,7 +166,7 @@ class TasksController extends AbstractController
      * Метод удаления задачи
      *
      * @param integer $id - id задачи
-     * @return string
+     * @return object
      */
     public function deleteTasks($id)
     {
@@ -201,7 +201,7 @@ class TasksController extends AbstractController
      * Метод фильтрации списка задач
      *
      * @param object $request - объект запроса
-     * @return string
+     * @return object
      */
     public function getByFilter(Request $request)
     {

@@ -16,7 +16,7 @@ class UsersController extends AbstractController
      *
      * Метод получения списка пользователей
      *
-     * @return string
+     * @return object
      */
     public function getAllUsers()
     {
@@ -42,7 +42,7 @@ class UsersController extends AbstractController
      * Метод получения пользователя по id
      *
      * @param integer $id - id пользователя
-     * @return string
+     * @return object
      */
     public function getItemUsers($id)
     {
@@ -75,7 +75,7 @@ class UsersController extends AbstractController
      *
      * @param object $validator - валидатор
      * @param object $request - объект запроса
-     * @return string
+     * @return object
      */
     public function addUsers(ValidatorInterface $validator, Request $request)
     {
@@ -115,7 +115,7 @@ class UsersController extends AbstractController
      * @param integer $id - id пользователя
      * @param object $validator - валидатор
      * @param object $request - объект запроса
-     * @return string
+     * @return object
      */
     public function updateUsers($id, ValidatorInterface $validator, Request $request)
     {
@@ -162,7 +162,7 @@ class UsersController extends AbstractController
      * Метод удаления пользователя
      *
      * @param integer $id - id пользователя
-     * @return string
+     * @return object
      */
     public function deleteUsers($id)
     {
